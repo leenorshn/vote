@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "389358274522",
+    "project_id": "votes-54abd",
+    "storage_bucket": "votes-54abd.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:389358274522:android:96f99c64008b052704a2e3",
+        "android_client_info": {
+          "package_name": "com.leenor.vote"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "389358274522-ft7ijv4qb14fpggeojt9cbtt8ji2mh9s.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCOU8pkAaxvSkBJM4P1ChcGNHbdjy0We5g"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "389358274522-ft7ijv4qb14fpggeojt9cbtt8ji2mh9s.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

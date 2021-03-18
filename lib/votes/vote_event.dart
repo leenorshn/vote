@@ -25,3 +25,12 @@ class AddVote extends VoteEvent {
   @override
   List<Object> get props => [this.matriculeUID];
 }
+
+class AddViceVote extends VoteEvent {
+  final String matriculeUID;
+
+  AddViceVote(this.matriculeUID);
+
+  @override
+  List<Object> get props => [this.matriculeUID];
+}

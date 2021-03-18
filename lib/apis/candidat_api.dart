@@ -9,7 +9,11 @@ class CandidatApi {
   CandidatApi() : _firestore = FirebaseFirestore.instance;
 
   Stream<List<Candidat>> getCandidatPresident() {
-    return _firestore.collection("candidats").snapshots().map((snap) {
+    return _firestore
+        .collection("candidats")
+        .where("type", isEqualTo: "PRESIDENT")
+        .snapshots()
+        .map((snap) {
       return snap.docs.map((doc) {
         return Candidat.fromJson(doc.data());
       }).toList();

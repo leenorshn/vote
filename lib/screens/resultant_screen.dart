@@ -3,9 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:vote/apis/vote_api.dart';
 import 'package:vote/models/candidat.dart';
-import 'package:vote/models/vote.dart';
 import 'package:vote/screens/candidat_bloc/candidat_bloc.dart';
+import 'package:vote/screens/candidat_vice_bloc/candidat_vice_bloc.dart';
 import 'package:vote/votes/vote_bloc.dart';
+import 'package:vote/votes_vice/vote_vice_bloc.dart';
 
 class ResultScreen extends StatelessWidget {
   @override
@@ -57,73 +58,95 @@ class ResultScreen extends StatelessWidget {
               ),
             ),
             Card(
-              child: Row(
-                children: [
-                  Expanded(
-                    child: Container(
-                      padding: EdgeInsets.only(bottom: 8),
-                      child: Column(
-                        children: [
-                          Container(
-                            height: 100,
-                            width: 100,
-                            child: Image.asset("images/success.PNG"),
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: Text(
-                              "Nom du vice",
-                              style:
-                                  TextStyle(fontSize: 14, color: Colors.grey),
-                            ),
-                          ),
-                          Text(
-                            "95%",
-                            style: TextStyle(fontSize: 14, color: Colors.grey),
-                          ),
-                          Text(
-                            "890 voix",
-                            style: TextStyle(fontSize: 14, color: Colors.grey),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                  Expanded(
-                    child: Container(
-                      padding: EdgeInsets.only(bottom: 8),
-                      child: Column(
-                        children: [
-                          Container(
-                            height: 100,
-                            width: 100,
-                            child: Image.asset("images/success.PNG"),
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: Text(
-                              "Nom du vice",
-                              style:
-                                  TextStyle(fontSize: 14, color: Colors.grey),
-                            ),
-                          ),
-                          Text(
-                            "95%",
-                            style: TextStyle(fontSize: 14, color: Colors.grey),
-                          ),
-                          Text(
-                            "890 voix",
-                            style: TextStyle(fontSize: 14, color: Colors.grey),
-                          ),
-                        ],
-                      ),
-                    ),
-                  )
-                ],
+              margin: EdgeInsets.zero,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.zero,
+              ),
+              child: Container(
+                height: 200,
+                child: BlocBuilder<CandidatViceBloc, CandidatViceState>(
+                    builder: (context, state) {
+                  if (state is CandidatViceLoadedSuccess) {
+                    return ListView.builder(
+                      scrollDirection: Axis.horizontal,
+                      itemCount: state.candidats.length,
+                      itemBuilder: (context, index) {
+                        Candidat candidat = state.candidats[index];
+                        return CandidatViceTile(
+                          candidat: candidat,
+                        );
+                      },
+                    );
+                  } else {
+                    return Center(
+                      child: CircularProgressIndicator(),
+                    );
+                  }
+                }),
               ),
             ),
           ],
         ),
+      ),
+    );
+  }
+}
+
+class CandidatViceTile extends StatelessWidget {
+  const CandidatViceTile({
+    this.candidat,
+    Key key,
+  }) : super(key: key);
+
+  final Candidat candidat;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      height: (MediaQuery.of(context).size.width / 3) + 56,
+      padding: EdgeInsets.only(bottom: 8),
+      child: Column(
+        children: [
+          Container(
+            height: 100,
+            width: 100,
+            child: Image.network(candidat.avatar),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Text(
+              "${candidat.name}",
+              style: TextStyle(fontSize: 14, color: Colors.grey),
+            ),
+          ),
+          StreamBuilder<int>(
+              stream:
+                  VoteApi().getCandidatVotesVice(this.candidat.id).asStream(),
+              builder: (context, snapshot) {
+                if (snapshot.hasData) {
+                  return Text(
+                    "${snapshot.data} voix",
+                    style: TextStyle(fontSize: 24, color: Colors.teal),
+                  );
+                }
+                return Text(
+                  "0 voix",
+                  style: TextStyle(fontSize: 18, color: Colors.teal),
+                );
+              }),
+          BlocBuilder<VoteViceBloc, VoteViceState>(builder: (context, state) {
+            if (state is VoteViceLoadedSuccess) {
+              return Text(
+                "/ ${state.votes} total ",
+                style: TextStyle(fontSize: 18, color: Colors.orange[700]),
+              );
+            }
+            return Text(
+              "0",
+              style: TextStyle(fontSize: 18, color: Colors.orange[700]),
+            );
+          }),
+        ],
       ),
     );
   }

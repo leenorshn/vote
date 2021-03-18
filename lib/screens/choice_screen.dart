@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:vote/auth/auth_bloc.dart';
+import 'package:vote/screens/case_vote/case_vote_bloc.dart';
+import 'package:vote/screens/case_vote_vice/case_vote_vice_bloc.dart';
 
 class ChoiceScreen extends StatefulWidget {
   @override
@@ -44,33 +46,71 @@ class _ChoiceScreenState extends State<ChoiceScreen> {
             SizedBox(
               height: 56,
             ),
-            ChoiceVoteMenu(
-              onTap: () {
-                Navigator.of(context).pushNamed(
-                  "CPscreen",
+            BlocBuilder<CaseVoteBloc, CaseVoteState>(
+                // cubit: CaseVoteBloc(),
+                builder: (context, state) {
+              if (state is HasVoteSuccess) {
+                if (state.hasVote) {
+                  return ChoseDone(
+                    cases: "President",
+                  );
+                } else {
+                  return ChoiceVoteMenu(
+                    onTap: () {
+                      Navigator.of(context).pushNamed(
+                        "candidat",
+                      );
+                    },
+                    label: "Presidentiel",
+                    numStep: "1",
+                  );
+                }
+              } else if (state is CaseVoteProgress) {
+                return CustomLoading();
+              } else {
+                return ChoiceVoteMenu(
+                  onTap: () {
+                    Navigator.of(context).pushNamed(
+                      "candidat",
+                    );
+                  },
+                  label: "Presidentiel",
+                  numStep: "1",
                 );
-              },
-              label: "Chef de promotion Et CPA",
-              numStep: "1",
-            ),
-            ChoiceVoteMenu(
-              onTap: () {
-                Navigator.of(context).pushNamed(
-                  "candidat",
+              }
+            }),
+            BlocBuilder<CaseVoteViceBloc, CaseVoteViceState>(
+                builder: (context, state) {
+              if (state is HasVoteViceSuccess) {
+                if (state.hasVote) {
+                  return ChoseDone(
+                    cases: "Vice-president",
+                  );
+                } else {
+                  return ChoiceVoteMenu(
+                    onTap: () {
+                      Navigator.of(context).pushNamed(
+                        "vice-candidat",
+                      );
+                    },
+                    label: "Vice-Presidentiel",
+                    numStep: "2",
+                  );
+                }
+              } else if (state is CaseVoteViceProgress) {
+                return CustomLoading();
+              } else {
+                return ChoiceVoteMenu(
+                  onTap: () {
+                    Navigator.of(context).pushNamed(
+                      "vice-candidat",
+                    );
+                  },
+                  label: "Vice-Presidentiel",
+                  numStep: "2",
                 );
-              },
-              label: "Presidentiel",
-              numStep: "2",
-            ),
-            ChoiceVoteMenu(
-              onTap: () {
-                Navigator.of(context).pushNamed(
-                  "vice-candidat",
-                );
-              },
-              label: "Vice-Presidentiel",
-              numStep: "3",
-            ),
+              }
+            }),
             ChoiceVoteMenu(
               onTap: () {
                 Navigator.of(context).pushNamed(
@@ -78,7 +118,7 @@ class _ChoiceScreenState extends State<ChoiceScreen> {
                 );
               },
               label: "Resultats de vote",
-              numStep: "4",
+              numStep: "3",
             ),
             Spacer(),
             SvgPicture.asset(
@@ -91,6 +131,37 @@ class _ChoiceScreenState extends State<ChoiceScreen> {
               height: 24,
             ),
           ],
+        ),
+      ),
+    );
+  }
+}
+
+class CustomLoading extends StatelessWidget {
+  const CustomLoading({
+    Key key,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Card(
+        child: Container(
+          width: MediaQuery.of(context).size.width - 24,
+          padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                "Encours ....",
+                style: TextStyle(
+                  color: Color(0xff21ce99),
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+              CircularProgressIndicator(),
+            ],
+          ),
         ),
       ),
     );
@@ -127,6 +198,29 @@ class ChoiceVoteMenu extends StatelessWidget {
               borderRadius: BorderRadius.circular(22), border: Border.all()),
         ),
         trailing: Icon(CupertinoIcons.chevron_forward),
+      ),
+    );
+  }
+}
+
+class ChoseDone extends StatelessWidget {
+  final String cases;
+
+  const ChoseDone({Key key, this.cases}) : super(key: key);
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      margin: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      color: Color(0xff21ce99),
+      child: ListTile(
+        leading: Icon(
+          Icons.done,
+          color: Colors.white,
+        ),
+        title: Text(
+          "Tu as deja voté le ${cases}",
+          style: TextStyle(color: Colors.white),
+        ),
       ),
     );
   }

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:vote/auth/auth_bloc.dart';
 import 'package:vote/models/candidat.dart';
 import 'package:vote/screens/candidat_bloc/candidat_bloc.dart';
 import 'package:vote/votes/vote_bloc.dart';
@@ -18,9 +19,9 @@ class CandidatScreen extends StatelessWidget {
             BlocBuilder<CandidatBloc, CandidatState>(builder: (context, state) {
           if (state is CandidatLoadedSuccess) {
             List<Candidat> candidats = [];
-            candidats = state.candidats
-                .where((element) => element.type == "PRESIDENT")
-                .toList();
+            candidats = state.candidats;
+            // .where((element) => element.type == "PRESIDENT")
+            // .toList();
 
             if (candidats.length == 0) {
               return Center(
@@ -38,6 +39,12 @@ class CandidatScreen extends StatelessWidget {
                   numero: candidats[index].numero,
                   slogan: candidats[index].slogan,
                   matricule: candidats[index].id,
+                  onTap: () {
+                    BlocProvider.of<VoteBloc>(context)
+                      ..add(AddVote(candidats[index].id));
+                    Navigator.of(context).pop();
+                    BlocProvider.of<AuthBloc>(context)..add(AppStart());
+                  },
                 );
               },
             );
@@ -62,7 +69,9 @@ class CandidatTileCard extends StatelessWidget {
   final String slogan;
   final String name;
   final String matricule;
+  final Function onTap;
   const CandidatTileCard({
+    this.onTap,
     this.name,
     this.imageUrl,
     this.matricule,
@@ -123,10 +132,7 @@ class CandidatTileCard extends StatelessWidget {
                       style: ElevatedButton.styleFrom(
                           padding: EdgeInsets.symmetric(
                               vertical: 15, horizontal: 64)),
-                      onPressed: () {
-                        BlocProvider.of<VoteBloc>(context)
-                          ..add(AddVote(matricule));
-                      },
+                      onPressed: this.onTap,
                       child: Text("Je vote"),
                     ),
                   ],

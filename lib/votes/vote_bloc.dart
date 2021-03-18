@@ -35,5 +35,10 @@ class VoteBloc extends Bloc<VoteEvent, VoteState> {
       await voteApi.voter(event.matriculeUID);
       yield VoteInitial();
     }
+
+    if (event is AddViceVote) {
+      await voteApi.voterVicePresident(event.matriculeUID);
+      yield VoteInitial();
+    }
   }
 }

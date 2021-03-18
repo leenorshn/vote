@@ -6,16 +6,19 @@ import 'package:vote/apis/candidat_api.dart';
 import 'package:vote/apis/vote_api.dart';
 import 'package:vote/auth/auth_bloc.dart';
 import 'package:vote/screens/candidat_screen.dart';
+import 'package:vote/screens/candidat_vice_bloc/candidat_vice_bloc.dart';
+import 'package:vote/screens/case_vote/case_vote_bloc.dart';
 import 'package:vote/screens/choice_screen.dart';
 import 'package:vote/screens/error_screen.dart';
 import 'package:vote/screens/login_screen.dart';
 import 'package:vote/screens/progress_screen.dart';
 import 'package:vote/screens/resultant_screen.dart';
 import 'package:vote/votes/vote_bloc.dart';
+import 'package:vote/votes_vice/vote_vice_bloc.dart';
 
 import 'screens/candidat_bloc/candidat_bloc.dart';
 import 'screens/candidat_vice_screen.dart';
-import 'screens/cp_screen.dart';
+import 'screens/case_vote_vice/case_vote_vice_bloc.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -35,7 +38,22 @@ class MyApp extends StatelessWidget {
               CandidatBloc(CandidatApi())..add(StartLoadCandidat()),
         ),
         BlocProvider(
+          create: (context) =>
+              CandidatViceBloc(CandidatApi())..add(StartLoadCandidatVice()),
+        ),
+        BlocProvider(
+          create: (context) =>
+              CaseVoteBloc(VoteApi())..add(LoadCaseVoteEvent()),
+        ),
+        BlocProvider(
           create: (context) => VoteBloc(VoteApi())..add(LoadVote()),
+        ),
+        BlocProvider(
+          create: (context) => VoteViceBloc(VoteApi())..add(LoadVoteVice()),
+        ),
+        BlocProvider(
+          create: (context) =>
+              CaseVoteViceBloc(VoteApi())..add(LoadCaseViceVoteEvent()),
         ),
         // BlocProvider(create: (context) => AuthBloc(AuthApi())),
       ],
@@ -57,7 +75,6 @@ class MyApp extends StatelessWidget {
           "candidat": (context) => CandidatScreen(),
           "vice-candidat": (context) => CandidatViceScreen(),
           "resultant": (context) => ResultScreen(),
-          "CPscreen": (context) => CPScreen(),
         },
       ),
     );

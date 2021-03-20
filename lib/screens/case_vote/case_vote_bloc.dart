@@ -24,6 +24,8 @@ class CaseVoteBloc extends Bloc<CaseVoteEvent, CaseVoteState> {
       try {
         yield CaseVoteProgress();
         _subscription = voteApi.hasVotesPresident().asStream().listen((event) {
+          print(event.toString());
+
           return add(UpdateCaseVoteEvent(event));
         });
       } catch (ex) {

@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:vote/apis/vote_api.dart';
 import 'package:vote/auth/auth_bloc.dart';
 import 'package:vote/screens/case_vote/case_vote_bloc.dart';
 import 'package:vote/screens/case_vote_vice/case_vote_vice_bloc.dart';
@@ -21,10 +22,20 @@ class _ChoiceScreenState extends State<ChoiceScreen> {
         elevation: 0,
         actions: [
           IconButton(
-              icon: Icon(CupertinoIcons.clear_circled),
-              onPressed: () {
-                BlocProvider.of<AuthBloc>(context)..add(LogoutEvent());
-              })
+            icon: Icon(CupertinoIcons.refresh),
+            onPressed: () {
+              BlocProvider.of<AuthBloc>(context)..add(AppStart());
+              BlocProvider.of<CaseVoteBloc>(context)..add(LoadCaseVoteEvent());
+              BlocProvider.of<CaseVoteViceBloc>(context)
+                ..add(LoadCaseViceVoteEvent());
+            },
+          ),
+          IconButton(
+            icon: Icon(CupertinoIcons.clear_circled),
+            onPressed: () {
+              BlocProvider.of<AuthBloc>(context)..add(LogoutEvent());
+            },
+          ),
         ],
       ),
       body: Container(
@@ -47,70 +58,72 @@ class _ChoiceScreenState extends State<ChoiceScreen> {
               height: 56,
             ),
             BlocBuilder<CaseVoteBloc, CaseVoteState>(
-                // cubit: CaseVoteBloc(),
+                cubit: CaseVoteBloc(VoteApi())..add(LoadCaseVoteEvent()),
                 builder: (context, state) {
-              if (state is HasVoteSuccess) {
-                if (state.hasVote) {
-                  return ChoseDone(
-                    cases: "President",
-                  );
-                } else {
-                  return ChoiceVoteMenu(
-                    onTap: () {
-                      Navigator.of(context).pushNamed(
-                        "candidat",
+                  if (state is HasVoteSuccess) {
+                    if (state.hasVote) {
+                      return ChoseDone(
+                        cases: "President",
                       );
-                    },
-                    label: "Presidentiel",
-                    numStep: "1",
-                  );
-                }
-              } else if (state is CaseVoteProgress) {
-                return CustomLoading();
-              } else {
-                return ChoiceVoteMenu(
-                  onTap: () {
-                    Navigator.of(context).pushNamed(
-                      "candidat",
+                    } else {
+                      return ChoiceVoteMenu(
+                        onTap: () {
+                          Navigator.of(context).pushNamed(
+                            "candidat",
+                          );
+                        },
+                        label: "Presidentiel",
+                        numStep: "1",
+                      );
+                    }
+                  } else if (state is CaseVoteProgress) {
+                    return CustomLoading();
+                  } else {
+                    return ChoiceVoteMenu(
+                      onTap: () {
+                        Navigator.of(context).pushNamed(
+                          "candidat",
+                        );
+                      },
+                      label: "Presidentiel",
+                      numStep: "1",
                     );
-                  },
-                  label: "Presidentiel",
-                  numStep: "1",
-                );
-              }
-            }),
+                  }
+                }),
             BlocBuilder<CaseVoteViceBloc, CaseVoteViceState>(
+                cubit: CaseVoteViceBloc(VoteApi())
+                  ..add(LoadCaseViceVoteEvent()),
                 builder: (context, state) {
-              if (state is HasVoteViceSuccess) {
-                if (state.hasVote) {
-                  return ChoseDone(
-                    cases: "Vice-president",
-                  );
-                } else {
-                  return ChoiceVoteMenu(
-                    onTap: () {
-                      Navigator.of(context).pushNamed(
-                        "vice-candidat",
+                  if (state is HasVoteViceSuccess) {
+                    if (state.hasVote) {
+                      return ChoseDone(
+                        cases: "Vice-president",
                       );
-                    },
-                    label: "Vice-Presidentiel",
-                    numStep: "2",
-                  );
-                }
-              } else if (state is CaseVoteViceProgress) {
-                return CustomLoading();
-              } else {
-                return ChoiceVoteMenu(
-                  onTap: () {
-                    Navigator.of(context).pushNamed(
-                      "vice-candidat",
+                    } else {
+                      return ChoiceVoteMenu(
+                        onTap: () {
+                          Navigator.of(context).pushNamed(
+                            "vice-candidat",
+                          );
+                        },
+                        label: "Vice-Presidentiel",
+                        numStep: "2",
+                      );
+                    }
+                  } else if (state is CaseVoteViceProgress) {
+                    return CustomLoading();
+                  } else {
+                    return ChoiceVoteMenu(
+                      onTap: () {
+                        Navigator.of(context).pushNamed(
+                          "vice-candidat",
+                        );
+                      },
+                      label: "Vice-Presidentiel",
+                      numStep: "2",
                     );
-                  },
-                  label: "Vice-Presidentiel",
-                  numStep: "2",
-                );
-              }
-            }),
+                  }
+                }),
             ChoiceVoteMenu(
               onTap: () {
                 Navigator.of(context).pushNamed(
